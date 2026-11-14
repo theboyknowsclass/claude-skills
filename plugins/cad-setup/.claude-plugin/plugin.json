@@ -1,0 +1,8 @@
+{
+  "name": "cad-setup",
+  "version": "0.1.0",
+  "description": "Set up a machine for AI-driven CAD over MCP: SolidCraft (headless and live), the SolidCraft Gridfinity plugin, FreeCAD with freecad-mcp, auto-updates, and optional contributor tools. Windows and macOS, with Linux notes.",
+  "author": { "name": "theboyknowsclass" },
+  "license": "MIT",
+  "keywords": ["setup", "solidcraft", "freecad", "mcp", "cad", "3d-printing", "cnc"]
+}

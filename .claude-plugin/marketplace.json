@@ -11,6 +11,11 @@
       "name": "gridfinity",
       "source": "./plugins/gridfinity",
       "description": "Gridfinity bins and baseplates in SolidCraft over MCP: spec dimensions, tested build recipes, volume checks, personal preferences."
+    },
+    {
+      "name": "cad-setup",
+      "source": "./plugins/cad-setup",
+      "description": "Set up a machine for CAD over MCP: SolidCraft (headless and live), the SolidCraft Gridfinity plugin, FreeCAD with freecad-mcp, weekly auto-update. Windows and macOS, Linux notes."
     }
   ]
 }
