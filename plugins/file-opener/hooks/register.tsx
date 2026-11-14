@@ -34,16 +34,37 @@ function clean(raw: string): string | undefined {
   return HAS_EXT.test(p) ? p : undefined
 }
 
-/** The file paths a block of markdown names, in order, each once. */
-export function findPaths(text: string): string[] {
-  const out: string[] = []
-  const add = (raw: string) => {
-    const p = clean(raw)
-    if (p !== undefined && !out.includes(p) && out.length < MAX_CANDIDATES) out.push(p)
+// A bare C:\ path may hold spaces, so it can end at any extension that is followed
+// by the end of the line, whitespace or punctuation. It never runs into the next C:\.
+const BARE_START = /(?<![\w`(<[\\/])[A-Za-z]:\\/g
+const BARE_SPAN = /^[A-Za-z]:\\(?:(?!\s[A-Za-z]:\\)[^\n`*"'<>|()[\]])*/
+const BARE_END = /\.[A-Za-z0-9]{1,8}(?=$|[\s.,;:!?])/g
+const MAX_BARE_SPAN = 300
+const MAX_ALTERNATIVES = 8
+
+function bareCandidates(rest: string): string[] {
+  const span = BARE_SPAN.exec(rest)![0].slice(0, MAX_BARE_SPAN)
+  const ends: string[] = []
+  for (const m of span.matchAll(BARE_END)) {
+    ends.push(span.slice(0, m.index! + m[0].length))
+    if (ends.length >= MAX_ALTERNATIVES) break
   }
-  for (const m of text.matchAll(/\]\((<[^>\n]+>|[^)\s]+)\)/g)) add(m[1]!)
-  for (const m of text.matchAll(/`([^`\n]+)`/g)) if (!/^\$|\(.*\)$/.test(m[1]!)) add(m[1]!)
-  for (const m of text.matchAll(/(?<![\w`(<[\\/])([A-Za-z]:\\[^\s`*"'<>|()[\]]+)/g)) add(m[1]!.replace(/[.,;:]+$/, ''))
+  return ends.reverse()
+}
+
+/**
+ * The file paths a block of markdown names, in order, each once. Each entry lists
+ * the ways one mention could be read, longest first; the first that exists wins.
+ */
+export function findPaths(text: string): string[][] {
+  const out: string[][] = []
+  const add = (raws: readonly string[]) => {
+    const ps = [...new Set(raws.map(clean).filter((p): p is string => p !== undefined))]
+    if (ps.length > 0 && !out.some(o => o.join('\n') === ps.join('\n')) && out.length < MAX_CANDIDATES) out.push(ps)
+  }
+  for (const m of text.matchAll(/\]\((<[^>\n]+>|[^)\n]+)\)/g)) add([m[1]!])
+  for (const m of text.matchAll(/`([^`\n]+)`/g)) if (!/^\$|\(.*\)$/.test(m[1]!)) add([m[1]!])
+  for (const m of text.matchAll(BARE_START)) add(bareCandidates(text.slice(m.index!)))
   return out
 }
 
@@ -53,27 +74,32 @@ async function detect($: EngineInterface) {
   return { isWindows, cwd }
 }
 
-async function resolveFiles($: EngineInterface, paths: readonly string[]): Promise<Found[]> {
+async function resolveFiles($: EngineInterface, paths: readonly (string | readonly string[])[]): Promise<Found[]> {
   const { isWindows: win, cwd: base } = await detect($)
   const sep = win ? '\\' : '/'
   const found: Found[] = []
-  for (const raw of paths) {
-    let path = IS_ABSOLUTE.test(raw) ? raw : base.replace(/[\\/]+$/, '') + sep + raw.replace(/^\.[\\/]/, '')
-    if (win) path = path.replace(/\//g, '\\')
-    const name = path.slice(Math.max(path.lastIndexOf('\\'), path.lastIndexOf('/')) + 1)
-    const ext = name.slice(name.lastIndexOf('.') + 1).toLowerCase()
-    if (exts !== undefined && !exts.has(ext)) continue
-    if (found.some(f => f.path.toLowerCase() === path.toLowerCase())) continue
-    let isFile = isFileCache.get(path)
-    if (isFile === undefined) {
-      isFile = await $.fs.stat(path).then(
-        s => s.kind === 'file',
-        () => false,
-      )
-      // Remember hits only; a miss may be a file about to be written.
-      if (isFile) isFileCache.set(path, true)
+  for (const entry of paths) {
+    for (const raw of typeof entry === 'string' ? [entry] : entry) {
+      let path = IS_ABSOLUTE.test(raw) ? raw : base.replace(/[\\/]+$/, '') + sep + raw.replace(/^\.[\\/]/, '')
+      if (win) path = path.replace(/\//g, '\\')
+      const name = path.slice(Math.max(path.lastIndexOf('\\'), path.lastIndexOf('/')) + 1)
+      const ext = name.slice(name.lastIndexOf('.') + 1).toLowerCase()
+      if (exts !== undefined && !exts.has(ext)) continue
+      if (found.some(f => f.path.toLowerCase() === path.toLowerCase())) break
+      let isFile = isFileCache.get(path)
+      if (isFile === undefined) {
+        isFile = await $.fs.stat(path).then(
+          s => s.kind === 'file',
+          () => false,
+        )
+        // Remember hits only; a miss may be a file about to be written.
+        if (isFile) isFileCache.set(path, true)
+      }
+      if (isFile) {
+        found.push({ path, name })
+        break
+      }
     }
-    if (isFile) found.push({ path, name })
     if (found.length >= MAX_FILES) break
   }
   return found

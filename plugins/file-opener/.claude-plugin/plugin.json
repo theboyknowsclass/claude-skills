@@ -1,6 +1,6 @@
 {
   "name": "file-opener",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A card under every local file named in the chat with Open (default app, or the Windows picker when none is set) and Show in Explorer/Finder. Windows and macOS.",
   "author": {
     "name": "theboyknowsclass"
