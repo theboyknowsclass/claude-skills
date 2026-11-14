@@ -1,0 +1,5 @@
+{
+  "name": "state-probe",
+  "version": "0.1.0",
+  "description": "Probe: logs one line per lifecycle event (turn, tool.check, AskUserQuestion, session) to see what a mod can observe in a thread."
+}
