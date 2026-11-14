@@ -50,10 +50,10 @@ A preferences file is plain Markdown with these keys, for example:
 ```markdown
 # Gridfinity preferences
 - height_u: 3
-- label: debossed, font "OCR A Extended", 10 mm, 1 mm deep
-- body_colour: #9B9EA0
-- top_colour by category: tools #A3D8E1, consumables #E8AFCF
-- save_folder: D:\3D Models\Gridfinity\<category>\<Name>\
+- label: debossed, font "DejaVu Sans Mono", 10 mm, 1 mm deep
+- body_colour: #808080
+- top_colour by category: tools #4A90D9, consumables #E8AFCF
+- save_folder: ~/Gridfinity/<category>/<Name>/
 ```
 
 ## Gridfinity dimensions (mm)
