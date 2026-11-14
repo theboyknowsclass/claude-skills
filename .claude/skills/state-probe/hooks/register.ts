@@ -1,7 +1,7 @@
 import type { Register } from 'claude-code'
 
-// Probe mod: one line per event, to the transcript and (if REPORT_URL is set)
-// to REPORT_URL. Never logs or sends a token, cookie, credential or handle.
+// Probe mod: one line per event, to the transcript only. Sends no data
+// anywhere. Never logs a token, cookie, credential or handle.
 
 const clip = (s: string, n = 120) => s.replace(/\s+/g, ' ').slice(0, n)
 
@@ -11,21 +11,8 @@ async function emit($: any, event: string, detail: string) {
   if (sid === '?') {
     try { sid = await $.session.id() } catch { /* keep '?' */ }
   }
-  const line = `[state-probe] event=${event} ts=${new Date().toISOString()} session=${sid} detail=${clip(detail)}`
+  const line = `[state-probe] event=${event} ts=${new Date().toISOString()} session=${sid} detail=${clip(detail, 700)}`
   $.ui.log(line)
-  let url: string | undefined
-  try { url = await $.env.get('REPORT_URL') } catch { url = undefined }
-  if (!url || url.includes('<')) return
-  try {
-    const r = await $.http.fetch(url, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ event, sid, detail: clip(detail), ts: Date.now() }),
-    })
-    if (!r.ok) $.ui.log(`[state-probe] fetch status=${r.status}`)
-  } catch (err) {
-    $.ui.log(`[state-probe] fetch error=${clip(String(err), 200)}`)
-  }
 }
 
 async function where($: any) {
@@ -44,10 +31,16 @@ async function where($: any) {
   await tryCall('authorize', () => $.session.authorize(),
     v => v && typeof v === 'object' && 'handle' in v ? 'handle=yes' : v === null ? 'null' : 'deny-or-other')
   // project/thread ids: presence only for env names, values never logged
-  await tryCall('env.REPORT_URL', () => $.env.get('REPORT_URL'), v => (v === undefined ? 'unset' : 'set'))
   await tryCall('env.CLAUDE_CODE_PROJECTS_SESSION', () => $.env.get('CLAUDE_CODE_PROJECTS_SESSION'), v => (v === undefined ? 'unset' : 'set'))
   await tryCall('env.CLAUDE_CODE_REMOTE_SESSION_ID', () => $.env.get('CLAUDE_CODE_REMOTE_SESSION_ID'), v => (v === undefined ? 'unset' : 'set'))
   await tryCall('env.CLAUDE_CODE_ENTRYPOINT', () => $.env.get('CLAUDE_CODE_ENTRYPOINT'), v => (v === undefined ? 'unset' : 'set'))
+  // outbound check: plain GET, no body, no headers
+  try {
+    const r = await $.http.fetch('https://example.com')
+    out.push(`fetch.example.com=status:${r.status}`)
+  } catch (err) {
+    out.push(`fetch.example.com=error:${clip(String(err), 200)}`)
+  }
   return out.join(' ')
 }
 
