@@ -96,3 +96,46 @@ test('a reply with no files is left alone', async ($, on) => {
   expect(await ui.find({ type: 'Button' })).toBeUndefined()
   await ui.unmount()
 })
+
+test('bare paths and plain links with spaces (windows)', async ($, on) => {
+  const own = 'D:\\3D Models\\Dividers\\Hook Divider\\hook-divider-v61.3mf'
+  const mid = 'D:\\3D Models\\x.3mf'
+  const bin = 'D:\\3D Models\\Bin 2u.stl'
+  const lid = 'D:\\3D Models\\Lid v2.step'
+  const longer = 'D:\\Out\\v1.3mf backup.3mf'
+  const shorter = 'D:\\Out\\v1.3mf'
+  const linked = 'D:\\3D Models\\Linked part.3mf'
+  const exists = new Set([own, mid, bin, lid, longer, shorter, linked])
+
+  on('env.get', (_, e) => ({ value: e.name === 'OS' ? 'Windows_NT' : undefined }))
+  on('session.cwd', () => ({ value: 'D:\\work' }))
+  // On a Linux test host the engine may read a Windows path as relative, so match its end.
+  on('fs.stat', (_, e) => {
+    const bare = (p: string) => p.replace(/^[A-Za-z]:/, '').replace(/\\/g, '/')
+    if ([...exists].some(p => bare(e.path).endsWith(bare(p)))) return { value: fileStat }
+    throw Object.assign(new Error(`ENOENT: ${e.path}`), { code: 'ENOENT' })
+  })
+
+  const cases: Array<{ name: string; text: string; want: string[]; notWant?: string[] }> = [
+    { name: 'own line', text: `Done:\n${own}\nEnjoy.`, want: [own] },
+    { name: 'mid-sentence with a full stop', text: `Saved to ${mid}. Open it in the slicer.`, want: [mid] },
+    { name: 'two paths, trailing comma', text: `${bin}, and ${lid} are ready`, want: [bin, lid] },
+    { name: 'longest that exists wins', text: `Copied ${longer} for you`, want: [longer], notWant: [shorter] },
+    { name: 'plain markdown link', text: `See [the part](${linked}) here`, want: [linked] },
+    { name: 'missing file', text: 'Saved to D:\\3D Models\\gone.3mf, done.', want: [] },
+  ]
+
+  for (const c of cases) {
+    const ui = await $.ui.mount({
+      plugin: 'file-opener',
+      surface: 'desktop',
+      component: 'AssistantMessage',
+      requestId: `m-${c.name}`,
+      props: { text: c.text, isFirstOfReply: true },
+    })
+    for (const p of c.want) expect(await ui.find({ key: `open:${p}` })).toBeDefined()
+    for (const p of c.notWant ?? []) expect(await ui.find({ key: `open:${p}` })).toBeUndefined()
+    if (c.want.length === 0) expect(await ui.find({ type: 'Button' })).toBeUndefined()
+    await ui.unmount()
+  }
+})
