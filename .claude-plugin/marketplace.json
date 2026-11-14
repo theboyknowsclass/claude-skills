@@ -16,6 +16,11 @@
       "name": "cad-setup",
       "source": "./plugins/cad-setup",
       "description": "Set up a machine for CAD over MCP: SolidCraft (headless and live), the SolidCraft Gridfinity plugin, FreeCAD with freecad-mcp, weekly auto-update. Windows and macOS, Linux notes."
+    },
+    {
+      "name": "model-files",
+      "source": "./plugins/model-files",
+      "description": "Side panel of your newest model files (3MF, STL, STEP, ...) with one-click Open (default app) and Show in folder. Windows and macOS."
     }
   ]
 }
