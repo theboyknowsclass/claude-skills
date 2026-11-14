@@ -1,6 +1,16 @@
 {
   "name": "claude-skills",
-  "owner": { "name": "theboyknowsclass" },
-  "metadata": { "description": "Claude skills by theboyknowsclass" },
-  "plugins": []
+  "owner": {
+    "name": "theboyknowsclass"
+  },
+  "metadata": {
+    "description": "Claude skills by theboyknowsclass"
+  },
+  "plugins": [
+    {
+      "name": "gridfinity",
+      "source": "./plugins/gridfinity",
+      "description": "Gridfinity bins and baseplates in SolidCraft over MCP: spec dimensions, tested build recipes, volume checks, personal preferences."
+    }
+  ]
 }

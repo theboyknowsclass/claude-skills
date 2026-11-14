@@ -17,7 +17,7 @@ Download a skill's zip from [Releases](https://github.com/theboyknowsclass/claud
 
 | Plugin | What it does |
 | --- | --- |
-| _coming soon_ | gridfinity: parametric gridfinity bins and baseplates with SolidCraft |
+| [gridfinity](plugins/gridfinity) | Gridfinity bins (form-fit pocketed or hollow) and baseplates (open frame or magnet) in [SolidCraft](https://github.com/tangency-labs/solidcraft) over MCP. Personalise with a [preferences file](plugins/gridfinity/gridfinity-preferences.example.md). |
 
 ## Layout
 
