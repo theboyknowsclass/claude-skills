@@ -1,6 +1,6 @@
 # claude-skills
 
-Skills for [Claude](https://claude.com), published as a Claude Code plugin marketplace.
+Skills and mods for [Claude](https://claude.com), published as a Claude Code plugin marketplace. Both are Claude Code plugins and install the same way: a **skill** teaches Claude how to do something; a **mod** changes the Claude Code app itself (buttons, panels, hooks).
 
 ## Install (Claude Code)
 
@@ -19,7 +19,12 @@ Download a skill's zip from [Releases](https://github.com/theboyknowsclass/claud
 | --- | --- |
 | [gridfinity](plugins/gridfinity) | Gridfinity bins (form-fit pocketed or hollow) and baseplates (open frame or magnet) in [SolidCraft](https://github.com/tangency-labs/solidcraft) over MCP. Personalise with a [preferences file](plugins/gridfinity/gridfinity-preferences.example.md). |
 | [cad-setup](plugins/cad-setup) | Installs and wires up CAD tools for Claude over MCP: [SolidCraft](https://github.com/tangency-labs/solidcraft) (headless and live), its Gridfinity plugin, FreeCAD with [freecad-mcp](https://github.com/neka-nat/freecad-mcp), and a weekly SolidCraft auto-update. Windows and macOS, with Linux notes. Personalise with a [preferences file](plugins/cad-setup/cad-setup-preferences.example.md). |
-| [model-files](plugins/model-files) | A side panel (mod) listing the newest model files in a folder you choose, with buttons to open each in its default app or show it in Explorer/Finder. For local Claude Code sessions on Windows and macOS. |
+
+## Mods
+
+| Plugin | What it does |
+| --- | --- |
+| [file-opener](plugins/file-opener) | A card under every local file named in the chat: its name, **Open** (default app, or the Windows picker when none is set) and **Show in Explorer/Finder**. Local Claude Code sessions on Windows and macOS. Install: `/plugin install file-opener --marketplace theboyknowsclass/claude-skills` |
 
 ## Layout
 
