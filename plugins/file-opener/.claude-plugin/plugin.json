@@ -1,0 +1,25 @@
+{
+  "name": "file-opener",
+  "version": "0.2.0",
+  "description": "A card under every local file named in the chat with Open (default app, or the Windows picker when none is set) and Show in Explorer/Finder. Windows and macOS.",
+  "author": {
+    "name": "theboyknowsclass"
+  },
+  "license": "MIT",
+  "keywords": [
+    "files",
+    "open",
+    "buttons",
+    "3d-printing",
+    "cad",
+    "mod"
+  ],
+  "userConfig": {
+    "extensions": {
+      "type": "string",
+      "title": "File types",
+      "description": "Comma-separated extensions that get buttons, for example 3mf,stl,step. Empty means every file.",
+      "default": ""
+    }
+  }
+}
