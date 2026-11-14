@@ -1,0 +1,38 @@
+{
+  "name": "model-files",
+  "version": "0.1.0",
+  "description": "Side panel listing your newest model files (3MF, STL, STEP...) with buttons to open each in its default app or show it in its folder. Windows and macOS.",
+  "author": {
+    "name": "theboyknowsclass"
+  },
+  "license": "MIT",
+  "keywords": [
+    "files",
+    "3d-printing",
+    "cnc",
+    "cad",
+    "panel",
+    "mod"
+  ],
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "folder": {
+      "type": "string",
+      "title": "Models folder",
+      "description": "Folder to watch, searched recursively (for example D:\\3D Models or ~/3D Models).",
+      "default": "~/3D Models"
+    },
+    "extensions": {
+      "type": "string",
+      "title": "File types",
+      "description": "Comma-separated extensions to list.",
+      "default": "3mf,stl,step,stp,obj,f3d,fcstd,scad,gcode,nc,dxf,svg"
+    },
+    "count": {
+      "type": "number",
+      "title": "Files shown",
+      "description": "How many of the newest files to list.",
+      "default": 15
+    }
+  }
+}
