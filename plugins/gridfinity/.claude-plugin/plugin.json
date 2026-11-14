@@ -1,0 +1,8 @@
+{
+  "name": "gridfinity",
+  "version": "0.1.0",
+  "description": "Gridfinity bins (form-fit pocketed or hollow) and baseplates (open frame or magnet) built in SolidCraft over MCP, spec-correct and verified by volume, with per-user preferences.",
+  "author": { "name": "theboyknowsclass" },
+  "license": "MIT",
+  "keywords": ["gridfinity", "solidcraft", "cad", "3d-printing", "mcp"]
+}
